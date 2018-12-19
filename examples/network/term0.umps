@@ -1,0 +1,17 @@
+Network configuration:
+    - mac address: 12:12:12:12:12:12
+    - named:       True
+    - interrupt:   False
+    - promisq:     True
+    - set_mac:     False
+
+Network read / write (r/w, e to exit): r
+Listening for messages...
+Packet received from 00:32:37:31:33:33 :
+    ciao
+Packet received from 00:32:37:31:33:33 :
+    ok
+ destination: 12:12:12:12:12:12
+    - data:        ok
+
+Network read / write (r/w, e to exit): 
