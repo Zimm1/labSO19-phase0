@@ -83,6 +83,18 @@ int term_readline(char *buf, unsigned int count) {
     return count - i;
 }
 
+void readline(char *buf, unsigned int count){
+    int c;
+
+    /*Read from the terminal the first count characters and copy them in buf*/
+    while(--count && (c = term_getchar()) != '\n')
+        *buf++ = c;
+
+    *buf = '\0';
+
+    terminal->recv_command = 0;
+}
+
 static unsigned int tx_status(volatile termreg_t *tp) {
     return ((tp->transm_status) & TERM_STATUS_MASK);
 }

@@ -30,12 +30,18 @@ VPATH = $(UMPS2_DATA_DIR)
 
 .PHONY : all clean
 
-all : examples/network/kernel.core.umps
+all : examples/network/kernel.core.umps examples/disk/kernel.core.umps
 
 examples/network/kernel.core.umps : examples/network/kernel
 	umps2-elf2umps -k $<
 
 examples/network/kernel : examples/network/network_example.o libraries/network/network.o libraries/terminal/terminal.o utils/system/system_utils.o utils/print/print_utils.o utils/converter/converter_utils.o crtso.o libumps.o
+	$(LD) -o $@ $^ $(LDFLAGS)
+
+examples/disk/kernel.core.umps: examples/disk/kernel
+	umps2-elf2umps -k $<
+
+examples/disk/kernel : examples/disk/disk_test.o libraries/terminal/terminal.o libraries/disk/disk.o utils/system/system_utils.o  utils/converter/converter_utils.o crtso.o libumps.o
 	$(LD) -o $@ $^ $(LDFLAGS)
 
 clean :
