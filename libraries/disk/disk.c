@@ -5,7 +5,7 @@ volatile dtpreg_t *disk = (dtpreg_t*) DEV_REG_ADDR(IL_DISK, 0);
 static unsigned int tp_status(volatile dtpreg_t *tp);
 static unsigned int tp_geometry(volatile dtpreg_t *tp);
 
-int disk_read(void* i,unsigned int sectnum, unsigned int headnum){
+int disk_read(void* address,unsigned int sectnum, unsigned int headnum){
 
     unsigned int stat;
 
@@ -15,10 +15,10 @@ int disk_read(void* i,unsigned int sectnum, unsigned int headnum){
         return -1;
     }
 
-    sectnum = sectnum << BIT_OFFSET;
-    headnum = (headnum << BIT_OFFSET) << BIT_OFFSET;
+    sectnum = sectnum << ONE_BYTE_OFFSET;
+    headnum = (headnum << ONE_BYTE_OFFSET) << ONE_BYTE_OFFSET;
 
-    disk->data0 = (unsigned int) i;
+    disk->data0 = (unsigned int) address;
     disk->command = (headnum | sectnum | CMD_READBLK);
 
     while ((stat = tp_status(disk)) == ST_DEVICE_BUSY)
@@ -29,7 +29,7 @@ int disk_read(void* i,unsigned int sectnum, unsigned int headnum){
     return stat;
 }
 
-int disk_write(void* i,unsigned int sectnum,unsigned int headnum){
+int disk_write(void* address,unsigned int sectnum,unsigned int headnum){
     
     unsigned int stat;
 
@@ -39,10 +39,10 @@ int disk_write(void* i,unsigned int sectnum,unsigned int headnum){
         return -1;
     }
 
-    sectnum = sectnum << BIT_OFFSET;
-    headnum = (headnum << BIT_OFFSET) << BIT_OFFSET;
+    sectnum = sectnum << ONE_BYTE_OFFSET;
+    headnum = (headnum << ONE_BYTE_OFFSET) << ONE_BYTE_OFFSET;
 
-    disk->data0 = (unsigned int) i;
+    disk->data0 = (unsigned int) address;
     disk->command = ((headnum | sectnum) | CMD_WRITEBLK);
 
     while ((stat = tp_status(disk)) == ST_DEVICE_BUSY)
@@ -83,7 +83,7 @@ int seek(unsigned int cyl){
         return -1;
     }
 
-    cyl = cyl << BIT_OFFSET;
+    cyl = cyl << ONE_BYTE_OFFSET;
     disk->command = (CMD_SEEKCYL | cyl);
 
     while ((stat = tp_status(disk)) == ST_DEVICE_BUSY)
@@ -96,19 +96,19 @@ int seek(unsigned int cyl){
 
 
 
-int check_cyl(unsigned int cyl){
+bool check_cyl(unsigned int cyl){
     return cyl >= 0 && cyl < get_maxcyl();
 }
 
-int check_head(unsigned int head){
+bool check_head(unsigned int head){
     return head >= 0 && head < get_maxhead();
 }
 
-int check_sect(unsigned int sect){
+bool check_sect(unsigned int sect){
     return sect >= 0 && sect < get_maxsect();
 }
 
-int check(unsigned int sect, unsigned int head){
+bool check(unsigned int sect, unsigned int head){
     return check_sect(sect) && check_head(head);
 }
 
@@ -120,7 +120,7 @@ int get_maxcyl(){
 
     geometry = tp_geometry(disk);
 
-    geometry = (geometry >> BIT_OFFSET) >> BIT_OFFSET;
+    geometry = (geometry >> ONE_BYTE_OFFSET) >> ONE_BYTE_OFFSET;
 
     return geometry;
 }
@@ -140,7 +140,7 @@ int get_maxhead(){
 
     geometry = tp_geometry(disk);
 
-    geometry = (geometry >> BIT_OFFSET) & ONE_BYTE_MASK;
+    geometry = (geometry >> ONE_BYTE_OFFSET) & ONE_BYTE_MASK;
 
     return geometry;
 }
@@ -167,22 +167,22 @@ char* show_error_message(unsigned int error){
         }
 
         case ST_READ_ERROR:{
-            return "\nRead error!!\n\n";
+            return "\nRead error!\n\n";
             break;
         }
 
         case ST_WRITE_ERROR:{
-            return "\nWrite error!!\n\n";
+            return "\nWrite error!\n\n";
             break;
         }
 
         case ST_DMA_ERROR:{
-            return "\nDMA error!!\n\n";
+            return "\nDMA error!\n\n";
             break;
         }
 
         default: {
-            return "";
+            return "\nUnknown error!\n\n";
         }
     }
 }
@@ -190,9 +190,9 @@ char* show_error_message(unsigned int error){
 
 
 static unsigned int tp_status(volatile dtpreg_t *tp){
-    return ((tp->status) & TERM_STATUS_MASK);
+    return ((tp->status) & DISK_STATUS_MASK);
 }
 
 static unsigned int tp_geometry(volatile dtpreg_t *tp){
-    return ((tp->data1) & GEOMETRY_MASK);
+    return tp->data1;
 }

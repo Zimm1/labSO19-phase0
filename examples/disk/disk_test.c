@@ -5,7 +5,8 @@
 #include "../../utils/converter/converter_utils.h"
 #include "../../utils/system/system_utils.h"
 
-#define PARAMS_LENGTH               24
+#define LINE_LENGTH                 24
+#define CMD_LENGTH                  1
 
 /*Number digits with string terminator (0)*/
 #define CYLINDER_LENGTH             6
@@ -26,14 +27,6 @@
 #define EXIT                        5
 
 static int cmd;
-
-static int get_cmd(char* c){
-    char my_chr = c[0];
-    if(IS_DIGIT(my_chr)){
-        return my_chr - '0';
-    }
-    return -1;
-}
 
 int main(int argc, char *argv[]){
 
@@ -59,7 +52,7 @@ int main(int argc, char *argv[]){
         readline(my_cmd,LINE_BUF_SIZE);
 
         /*Take the first character from the line read and cast it to integer if possible*/
-        cmd = get_cmd(my_cmd);
+        cmd = get_int(my_cmd,CMD_LENGTH);
 
         term_putchar('\n');
 
@@ -81,7 +74,7 @@ int main(int argc, char *argv[]){
                 char buf[LINE_BUF_SIZE];
 
                 term_puts("Insert cylinder number: ");
-                readline(buf,PARAMS_LENGTH);
+                readline(buf,LINE_LENGTH);
 
                 /*Cast the first CYLINDER_NUMBER_DIGIT characters to integer*/
                 int cyl = get_int(buf, CYLINDER_NUMBER_DIGIT);
@@ -105,13 +98,13 @@ int main(int argc, char *argv[]){
                 char buf[LINE_BUF_SIZE];
 
                 term_puts("Insert sector: ");
-                readline(buf,PARAMS_LENGTH);
+                readline(buf,LINE_LENGTH);
 
                 /*Cast the first HEAD_SECT_NUMBER_DIGIT characters to integer*/
                 int sect = get_int(buf,HEAD_SECT_NUMBER_DIGIT);
 
                 term_puts("\nInsert head: ");
-                readline(buf,PARAMS_LENGTH);
+                readline(buf,LINE_LENGTH);
 
                 int head = get_int(buf,HEAD_SECT_NUMBER_DIGIT);
 
@@ -138,11 +131,11 @@ int main(int argc, char *argv[]){
                 char buf[LINE_BUF_SIZE];
 
                 term_puts("Insert sector: ");
-                readline(buf,PARAMS_LENGTH);
+                readline(buf,LINE_LENGTH);
                 int sect = get_int(buf,HEAD_SECT_NUMBER_DIGIT);
 
                 term_puts("\nInsert head: ");
-                readline(buf,PARAMS_LENGTH);
+                readline(buf,LINE_LENGTH);
                 int head = get_int(buf,HEAD_SECT_NUMBER_DIGIT);
 
                 if(sect != -1 && head != -1){

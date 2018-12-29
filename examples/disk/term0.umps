@@ -1,0 +1,107 @@
+****************************************************
+             Reading/Writing on DISK                
+****************************************************
+0: reset
+1: seek
+2: read
+3: write
+4: show disk geometry
+5: exit
+
+Insert cmd: 1a
+
+Insert cylinder number: 31
+Seek completed!
+
+0: reset
+1: seek
+2: read
+3: write
+4: show disk geometry
+5: exit
+
+Insert cmd: 0
+
+Resetting...
+
+Reset completed!
+
+0: reset
+1: seek
+2: read
+3: write
+4: show disk geometry
+5: exit
+
+Insert cmd: 6
+
+
+Invalid command!
+
+
+0: reset
+1: seek
+2: read
+3: write
+4: show disk geometry
+5: exit
+
+Insert cmd: 2
+
+Insert sector: 2
+
+Insert head: 6y
+
+Read error!
+
+
+0: reset
+1: seek
+2: read
+3: write
+4: show disk geometry
+5: exit
+
+Insert cmd: 3
+
+Insert sector: 1r
+
+Insert head: 0p
+
+
+Write something....
+
+fffer
+
+Text written in the disk!
+
+0: reset
+1: seek
+2: read
+3: write
+4: show disk geometry
+5: exit
+
+Insert cmd: 2
+
+Insert sector: 1
+
+Insert head: 0
+
+Read completed!
+
+fffer
+
+0: reset
+1: seek
+2: read
+3: write
+4: show disk geometry
+5: exit
+
+Insert cmd: 5
+
+
+****************************************************
+                 Disk test completed                
+****************************************************

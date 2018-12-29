@@ -1,4 +1,5 @@
 #include "converter_utils.h"
+#include "../bool/bool.h"
 
 void int_to_array(int n, unsigned char* out, int length) {
 	int i;
@@ -27,22 +28,23 @@ void int_to_hex_string(int n, char* hex) {
 int get_int(const char *str,unsigned int length){
 
     int retval = 0;
-    int valid = 0;
-    int c;
+    int c = 0;
+    bool valid = false;
 
-    for(c = 0;c < length; c++){
+    while(!valid && c < length){
         if(IS_DIGIT(*str)){
-            valid++;
-            retval = retval * 10 + *str -'0';
+            valid = true;
+            retval = retval * 10 + *str - '0';
         }
-        str = str + 1;
+        str++;
+        c++;
     }
 
     if(valid){
         return retval;
-    } else {
-        return -1;
     }
+
+    return -1;
 }
 
 void swap(char *x, char *y){

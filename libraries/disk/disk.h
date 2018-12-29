@@ -4,6 +4,7 @@
 
 #include "umps/arch.h"
 #include "umps/types.h"
+#include "../../utils/bool/bool.h"
 
 #define ST_DEVICE_NOT_INSTALLED         0
 #define ST_DEVICE_READY                 1
@@ -20,13 +21,12 @@
 #define CMD_READBLK                     3
 #define CMD_WRITEBLK                    4
 
-#define BIT_OFFSET                      8
-#define TERM_STATUS_MASK                0xFF
-#define GEOMETRY_MASK                   0xFFFFFFFF
+#define ONE_BYTE_OFFSET                 8
+#define DISK_STATUS_MASK                0xFF
 #define ONE_BYTE_MASK                   0xFF
 
-int disk_read(void* i,unsigned int sectnum, unsigned int headnum);
-int disk_write(void* i,unsigned int sectnum,unsigned int headnum);
+int disk_read(void* address,unsigned int sectnum, unsigned int headnum);
+int disk_write(void* address,unsigned int sectnum,unsigned int headnum);
 int reset();
 int seek(unsigned int cyl);
 
@@ -34,10 +34,10 @@ int get_maxhead();
 int get_maxsect();
 int get_maxcyl();
 
-int check(unsigned int sect, unsigned int head);
-int check_cyl(unsigned int cyl);
-int check_head(unsigned int head);
-int check_sect(unsigned int sect);
+bool check(unsigned int sect, unsigned int head);
+bool check_cyl(unsigned int cyl);
+bool check_head(unsigned int head);
+bool check_sect(unsigned int sect);
 
 char* show_error_message(unsigned int error);
 
