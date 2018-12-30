@@ -10,8 +10,6 @@
 
 #define LINE_BUF_SIZE 64
 
-unsigned char DEST_ADDR[6] = {0x12, 0x12, 0x12, 0x12, 0x12, 0x12};
-
 
 int read(packet_t *packet) {
 	int length = net_read(packet);
@@ -29,16 +27,24 @@ int read(packet_t *packet) {
 }
 
 int write(packet_t *packet, char *buf) {
-	term_puts("Packet:\n");
+	unsigned char dest_addr[6];
+	net_conf_t net_conf;
 
-	term_puts("    - destination: ");
-	print_mac_addr(DEST_ADDR);
+	net_conf_read(&net_conf);
+
+	term_puts("Packet:\n");
+	term_puts("    - from: ");
+	print_mac_addr(net_conf.addr);
 	term_putchar('\n');
 
-	term_puts("    - data:        ");
+	term_puts("    - to:   ");
+	term_readline(buf, LINE_BUF_SIZE);
+	str_mac_to_array(buf, dest_addr);
+
+	term_puts("    - data: ");
 	int length = term_readline(buf, LINE_BUF_SIZE);
 
-	net_packet_build(packet, DEST_ADDR, buf, length);
+	net_packet_build(packet, dest_addr, buf, length);
 	return net_write(packet, length);
 }
 
@@ -55,12 +61,13 @@ char choice(char *buf) {
 
 int main(int argc, char *argv[]) {
 	net_conf_t net_conf;
-	char buf[LINE_BUF_SIZE];
 	packet_t packet;
+	char buf[LINE_BUF_SIZE];
 
 	net_conf_read(&net_conf);
 	print_net_conf(&net_conf);
-	net_conf_set_promisq(0, &net_conf);
+
+	net_conf_set_promisq(0);
 
 	while(1) {
 		term_puts("\nNetwork read / write (r/w, e to exit): ");

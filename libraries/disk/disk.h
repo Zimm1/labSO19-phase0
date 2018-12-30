@@ -1,6 +1,5 @@
-
-#ifndef DISK_H_
-#define DISK_H_
+#ifndef DISK_H
+#define DISK_H
 
 #include "umps/arch.h"
 #include "umps/types.h"
@@ -25,20 +24,20 @@
 #define DISK_STATUS_MASK                0xFF
 #define ONE_BYTE_MASK                   0xFF
 
-int disk_read(void* address,unsigned int sectnum, unsigned int headnum);
-int disk_write(void* address,unsigned int sectnum,unsigned int headnum);
-int reset();
-int seek(unsigned int cyl);
+int disk_read(void* address, unsigned int sectnum, unsigned int headnum);
+int disk_write(void* address, unsigned int sectnum, unsigned int headnum);
+int disk_reset();
+int disk_seek(unsigned int cyl);
 
-int get_maxhead();
-int get_maxsect();
-int get_maxcyl();
+int disk_get_maxhead();
+int disk_get_maxsect();
+int disk_get_maxcyl();
 
-bool check(unsigned int sect, unsigned int head);
-bool check_cyl(unsigned int cyl);
-bool check_head(unsigned int head);
-bool check_sect(unsigned int sect);
+bool disk_check(unsigned int sect, unsigned int head);
+bool disk_check_cyl(unsigned int cyl);
+bool disk_check_head(unsigned int head);
+bool disk_check_sect(unsigned int sect);
 
-char* show_error_message(unsigned int error);
+char* disk_show_error_message(unsigned int error);
 
 #endif

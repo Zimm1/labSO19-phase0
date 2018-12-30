@@ -49,10 +49,10 @@ int main(int argc, char *argv[]){
 
         term_puts("Insert cmd: ");
 
-        readline(my_cmd,LINE_BUF_SIZE);
+        term_readline(my_cmd, LINE_BUF_SIZE);
 
         /*Take the first character from the line read and cast it to integer if possible*/
-        cmd = get_int(my_cmd,CMD_LENGTH);
+        cmd = str_to_int(my_cmd, CMD_LENGTH, 10);
 
         term_putchar('\n');
 
@@ -60,31 +60,30 @@ int main(int argc, char *argv[]){
 
             case RESET: {
                 term_puts("Resetting...\n");
-                int res = reset();
+                int res = disk_reset();
                 if(res == ST_DEVICE_READY){
                     term_puts("\nReset completed!\n");
                 } else {
-                    term_puts(show_error_message(res));
+                    term_puts(disk_show_error_message(res));
                 }
                 break;
             }
 
             case SEEK: {
-
                 char buf[LINE_BUF_SIZE];
 
                 term_puts("Insert cylinder number: ");
-                readline(buf,LINE_LENGTH);
+                term_readline(buf, LINE_LENGTH);
 
                 /*Cast the first CYLINDER_NUMBER_DIGIT characters to integer*/
-                int cyl = get_int(buf, CYLINDER_NUMBER_DIGIT);
+                int cyl = str_to_int(buf, CYLINDER_NUMBER_DIGIT, 10);
 
                 if(cyl != -1){
-                    int res = seek(cyl);
+                    int res = disk_seek(cyl);
                     if(res == ST_DEVICE_READY){
                         term_puts("Seek completed!\n");
                     } else {
-                        term_puts(show_error_message(res));
+                        term_puts(disk_show_error_message(res));
                     }
                 } else {
                     term_puts("\nInvalid input!\n\n");
@@ -94,30 +93,29 @@ int main(int argc, char *argv[]){
             }
 
             case READ: {
-
                 char buf[LINE_BUF_SIZE];
 
                 term_puts("Insert sector: ");
-                readline(buf,LINE_LENGTH);
+                term_readline(buf, LINE_LENGTH);
 
                 /*Cast the first HEAD_SECT_NUMBER_DIGIT characters to integer*/
-                int sect = get_int(buf,HEAD_SECT_NUMBER_DIGIT);
+                int sect = str_to_int(buf, HEAD_SECT_NUMBER_DIGIT, 10);
 
                 term_puts("\nInsert head: ");
-                readline(buf,LINE_LENGTH);
+                term_readline(buf, LINE_LENGTH);
 
-                int head = get_int(buf,HEAD_SECT_NUMBER_DIGIT);
+                int head = str_to_int(buf, HEAD_SECT_NUMBER_DIGIT, 10);
 
                 if(sect != -1 && head != -1){
                     char text_read[DISK_READ_LENGTH];
 
-                    int res = disk_read(text_read,sect,head);
+                    int res = disk_read(text_read, sect, head);
                     if(res == ST_DEVICE_READY){
                         term_puts("\nRead completed!\n\n");
                         term_puts(text_read);
                         term_putchar('\n');
                     } else {
-                        term_puts(show_error_message(res));
+                        term_puts(disk_show_error_message(res));
                     }
                 } else {
                     term_puts("\nInvalid input!\n\n");
@@ -127,28 +125,27 @@ int main(int argc, char *argv[]){
             }
 
             case WRITE: {
-
                 char buf[LINE_BUF_SIZE];
 
                 term_puts("Insert sector: ");
-                readline(buf,LINE_LENGTH);
-                int sect = get_int(buf,HEAD_SECT_NUMBER_DIGIT);
+                term_readline(buf,LINE_LENGTH);
+                int sect = str_to_int(buf, HEAD_SECT_NUMBER_DIGIT, 10);
 
                 term_puts("\nInsert head: ");
-                readline(buf,LINE_LENGTH);
-                int head = get_int(buf,HEAD_SECT_NUMBER_DIGIT);
+                term_readline(buf,LINE_LENGTH);
+                int head = str_to_int(buf, HEAD_SECT_NUMBER_DIGIT, 10);
 
                 if(sect != -1 && head != -1){
                     char text_write[LINE_BUF_SIZE];
                     term_puts("\n\nWrite something....\n\n");
-                    readline(text_write,LINE_BUF_SIZE);
+                    term_readline(text_write, LINE_BUF_SIZE);
 
-                    int res = disk_write(text_write,sect,head);
+                    int res = disk_write(text_write, sect, head);
 
                     if(res == ST_DEVICE_READY){
                         term_puts("\nText written in the disk!\n");
                     } else {
-                        term_puts(show_error_message(res));
+                        term_puts(disk_show_error_message(res));
                     }
                 } else {
                     term_puts("\nInvalid input!\n\n");
@@ -158,18 +155,17 @@ int main(int argc, char *argv[]){
             }
 
             case GEOMETRY: {
-
                 term_puts("MAX CYLINDER ");
-                int max_cyl = get_maxcyl();
-                term_puts(itoa(max_cyl,CYLINDER_LENGTH));
+                int max_cyl = disk_get_maxcyl();
+                term_puts(int_to_str(max_cyl, CYLINDER_LENGTH));
 
                 term_puts("\nMAX SECTOR ");
-                int max_sect = get_maxsect();
-                term_puts(itoa(max_sect,HEAD_SECT_LENGTH));
+                int max_sect = disk_get_maxsect();
+                term_puts(int_to_str(max_sect, HEAD_SECT_LENGTH));
 
                 term_puts("\nMAX HEAD ");
-                int max_head = get_maxhead();
-                term_puts(itoa(max_head,HEAD_SECT_LENGTH));
+                int max_head = disk_get_maxhead();
+                term_puts(int_to_str(max_head, HEAD_SECT_LENGTH));
                 term_putchar('\n');
 
                 break;

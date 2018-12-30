@@ -1,69 +1,105 @@
-# project-arrow
+# labSO 2018-2019 - Phase 0
+Libraries and examples for network and disk uMPS interfaces.
 
-# Disk Library
+## Network
+uMPS network interface is made for VDE (Virtual Distributed Network), a virtual network framework.
 
-Library that allows to use the disk avoiding the direct interaction with disk register. <br>
-In this way the programmer doesn't need to manually load the memory address in DATA0 (necessary for the I/O operations) and create
-the right COMMAND for each operations. 
+### Setup
+* Install VDE with the method you prefer (for example APT)
+    ```
+    sudo apt install vde2
+    ```
+* Create and run a new switch
+    ```
+    vde_switch -s /tmp/switch1
+    ```
+* Create a symbolic link to the switch
+    ```
+    ln -s /tmp/switch1 net0.umps
+    ```
+* In uMPS, load / create a virtual machine and set `net0.umps` as the configuration file for the first network interface
+* Start the virtual machine, which will now be connected to the switch created earlier
+* In order to exchange messages between VMs, open different uMPS instances and connect them to the same switch
 
-## Disk I/O
+### Network Library
+It allows the programmer to use a uMPS network interface without a direct manipulation of its register.
 
-*	```int disk_read(void* address,unsigned int sectnum, unsigned int headnum)``` <br>
-			Read the block located at (sectnum, headnum) in the current cylinder and copy it into RAM starting at (address).
+##### Network communication
+*	`int net_read(packet_t *packet)`<br>
+			Reads a pending received packet, if any, to (packet)
 
-* 	```int disk_write(void* address,unsigned int sectnum, unsigned int headnum)``` <br>
-			Copy the 4K of RAM starting at (address) and write it into block located at (sectnum, headnum) in the current cylinder.
+* 	`int net_write(packet_t *packet, unsigned int length)`<br>
+			Sends a (packet) containing a message which is long (length) chars
+            
+These functions return -1 in case of an error, the message length otherwise
+            
+##### Network configuration
+*	`int net_conf_read(net_conf_t* conf)`<br>
+			Reads the current network interface configuration to (conf)
 
-* 	```int reset()``` <br>
-			Move the boom to cylinder 0.
+* 	`int net_conf_write(net_conf_t* conf)`<br>
+			Sets the network interface configuration to (conf)
+            
+* 	`int net_conf_set_promisq(unsigned int mode)`<br>
+			Sets the current interface ability to intercept all packets on the network
+           
+* 	`int net_reset()`<br>
+			Empties the read and write buffers, resets the network address to default
+            
+These functions return -1 if in case of an error, 0 otherwise
 
-* 	```int seek(unsigned int cyl)``` <br>
-			Move the boom to cylinder (cyl).
+## Disk
+In uMPS, the disk is an external file which can be read and written and is divided in 4 KB blocks, indexed by cylinders, heads and sectors.
 
-All this functions return the value of ST_DEVICE_READY if the operation ends without error, otherwise return the value of error.
+### Setup
+* Create a new disk
+    ```
+    umps2-mkdev -d disk0.umps
+    ``` 
 
-## Disk geometry
+* In uMPS, load / create a virtual machine and set `disk0.umps` as the configuration file for the first disk interface
 
-The field name DATA1 describes the physical characteristics of the disk's geometry. <br>
-The following functions allow to get directly the value of interested field (cylinder, sector, head) without any additional operations
-on value in DATA1. 
+### Disk Library
+It allows the programmer to use a uMPS disk interface without a direct manipulation of its register.
 
-* 	```int get_maxcyl()``` <br>
-			Returns the number of cylinders.
+##### Disk I/O
+*	`int disk_read(void* address,unsigned int sectnum, unsigned int headnum)`<br>
+			Reads the block located at (sectnum, headnum) in the current cylinder and copies it to the RAM starting at (address)
 
-* 	```int get_maxsect()``` <br>
-			Returns the number of sectors.
+* 	`int disk_write(void* address,unsigned int sectnum, unsigned int headnum)`<br>
+			Copies 4 KB of RAM starting at (address) and writes to the block located at (sectnum, headnum) in the current cylinder
 
-* 	```int get_maxhead()``` <br>
-			Returns the number of heads.
+* 	`int reset()`<br>
+			Moves the boom to cylinder 0
 
-## Coordinates (cylinder, head, sector) checker
+* 	`int seek(unsigned int cyl)`<br>
+			Moves the boom to cylinder (cyl)
 
-The following functions check if the coordinates have a valid value.
+These functions return the value of ST_DEVICE_READY if the operation ends without errors, the id of the error otherwise.
 
-* 	```bool check(unsigned int sect, unsigned int head)``` <br>
-			Returns true only if the values of (sect, head) are respectively lesser of (MAXSECT, MAXHEAD) and major of 0.
+##### Disk geometry
+* 	`int get_maxcyl()`<br>
+			Returns the number of cylinders
 
-* 	```bool check_sect(unsigned int sect)``` <br>
-			Returns true only if the value of (sect) is lesser of (MAXSECT) and major of 0.
+* 	`int get_maxsect()`<br>
+			Returns the number of sectors
 
-* 	```bool check_head(unsigned int head)``` <br>
-			Returns true only if the value of (head) is lesser of (MAXHEAD) and major of 0.
+* 	`int get_maxhead()`<br>
+			Returns the number of heads
 
-* 	```bool check_cyl(unsigned int cyl)```  <br>
-			Returns true only if the value of (cyl) is lesser of (MAXCYL) and major of 0.
+##### Coordinates (cylinder, head, sector) checker
+* 	`bool check(unsigned int sect, unsigned int head)`<br>
+			Returns true only if the values of (sect, head) are respectively lesser then (MAXSECT, MAXHEAD) and greater than 0
 
-## Text error
+* 	`bool check_sect(unsigned int sect)`<br>
+			Returns true only if the value of (sect) is lesser than (MAXSECT) and greater than 0
 
-* 	```char* show_error_message(unsigned int error)``` <br>
-			Returns the text error of a given number (error).
+* 	`bool check_head(unsigned int head)`<br>
+			Returns true only if the value of (head) is lesser than (MAXHEAD) and greater than 0
 
-## How to create a new disk
+* 	`bool check_cyl(unsigned int cyl)`<br>
+			Returns true only if the value of (cyl) is lesser than (MAXCYL) and greater than 0
 
-```umps2-mkdev -d <diskfile.umps> [parameters]``` 
-
-* <b>-d</b> flag that indicates the creation of a disk.
-
-* <b><diskfile.umps></b> disk file name.
-
-* <b>[parameters]</b> parameters are necessaries only for the creation of a custom disk device (see the doc of umps2-mkdev for more details).
+##### Text error
+* 	`char* show_error_message(unsigned int error)`<br>
+			Returns the error message for a given error id (error)
