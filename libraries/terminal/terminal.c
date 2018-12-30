@@ -75,8 +75,10 @@ int term_readline(char *buf, unsigned int count) {
     int c;
     int i = count;
 
-    while (--i && (c = term_getchar()) != '\n')
+    while((c = term_getchar()) != '\n'){
         *buf++ = c;
+        --i;
+    }
 
     *buf = '\0';
 

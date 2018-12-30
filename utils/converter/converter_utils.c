@@ -16,7 +16,7 @@ int str_to_int(char *str, unsigned int length, int base){
     int value;
     int c;
 
-    while(c < length){
+    for(c = 0; c < length; c++){
         if (!IS_DIGIT(*str)) {
             return -1;
         }
@@ -28,12 +28,10 @@ int str_to_int(char *str, unsigned int length, int base){
         if (value >= 42) {
             value -= 32;
         }
+
         retval = retval * base + value;
-
         str++;
-        c++;
     }
-
     return retval;
 }
 
@@ -59,8 +57,9 @@ char* int_to_str(int num,int length){
         }
         n = n / 10;
     }
-    if(i == 0 )
+    if(i == 0 ){
         buffer[i++] = '0';
+    }
 
     buffer[i] = '\0';
 
