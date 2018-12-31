@@ -1,8 +1,11 @@
 #include "disk.h"
 
+/*Reference to the first disk device*/
 volatile dtpreg_t *disk = (dtpreg_t*) DEV_REG_ADDR(IL_DISK, 0);
 
+/*Returns the status of the disk*/
 static unsigned int tp_status(volatile dtpreg_t *tp);
+/*Returns the physical characteristics of the disk's geometry stored in DATA1*/
 static unsigned int tp_geometry(volatile dtpreg_t *tp);
 
 int disk_read(void* address, unsigned int sectnum, unsigned int headnum) {
@@ -15,12 +18,16 @@ int disk_read(void* address, unsigned int sectnum, unsigned int headnum) {
         return -1;
     }
 
+    /*The sector number of the disk is stored in the second byte*/
     sectnum = sectnum << ONE_BYTE_OFFSET;
+    /*The head number of the disk is stored in the third byte*/
     headnum = (headnum << ONE_BYTE_OFFSET) << ONE_BYTE_OFFSET;
 
+    /*DATA0 is used to specify the starting physical address for write DMA operation*/
     disk->data0 = (unsigned int) address;
     disk->command = (headnum | sectnum | CMD_READBLK);
 
+    /*Wait the end of the read on disk*/
     while ((stat = tp_status(disk)) == ST_DEVICE_BUSY);
 
     disk->command = CMD_ACK;
@@ -38,12 +45,16 @@ int disk_write(void* address,unsigned int sectnum,unsigned int headnum) {
         return -1;
     }
 
+    /*The sector number of the disk is stored in the second byte*/
     sectnum = sectnum << ONE_BYTE_OFFSET;
+    /*The head number of the disk is stored in the third byte*/
     headnum = (headnum << ONE_BYTE_OFFSET) << ONE_BYTE_OFFSET;
 
+    /*DATA0 is used to specify the starting physical address for read DMA operation.*/
     disk->data0 = (unsigned int) address;
-    disk->command = ((headnum | sectnum) | CMD_WRITEBLK);
+    disk->command = (headnum | sectnum | CMD_WRITEBLK);
 
+    /*Wait the end of the write on disk*/
     while ((stat = tp_status(disk)) == ST_DEVICE_BUSY);
 
     disk->command = CMD_ACK;
@@ -80,9 +91,11 @@ int disk_seek(unsigned int cyl) {
         return -1;
     }
 
+    /*The number of cylinder to seek is stored in the second byte*/
     cyl = cyl << ONE_BYTE_OFFSET;
     disk->command = (CMD_SEEKCYL | cyl);
 
+    /*Wait the end of the seek operation*/
     while ((stat = tp_status(disk)) == ST_DEVICE_BUSY);
 
     disk->command = CMD_ACK;
@@ -112,33 +125,36 @@ bool disk_check(unsigned int sect, unsigned int head) {
 
 int disk_get_maxcyl() {
 
-    unsigned int geometry;
+    unsigned int maxcyl;
 
-    geometry = tp_geometry(disk);
+    maxcyl = tp_geometry(disk);
 
-    geometry = (geometry >> ONE_BYTE_OFFSET) >> ONE_BYTE_OFFSET;
+    /*The number of cylinders are stored in the third and fourth byte*/
+    maxcyl = (maxcyl >> ONE_BYTE_OFFSET) >> ONE_BYTE_OFFSET;
 
-    return geometry;
+    return maxcyl;
 }
 
 int disk_get_maxsect() {
 
-    unsigned int geometry;
+    unsigned int maxsect;
 
-    geometry = tp_geometry(disk);
+    maxsect = tp_geometry(disk);
 
-    return geometry & ONE_BYTE_MASK;
+    /*The number of sectors are stored in the first byte*/
+    return maxsect & ONE_BYTE_MASK;
 }
 
 int disk_get_maxhead() {
 
-    unsigned int geometry;
+    unsigned int maxhead;
 
-    geometry = tp_geometry(disk);
+    maxhead = tp_geometry(disk);
 
-    geometry = (geometry >> ONE_BYTE_OFFSET) & ONE_BYTE_MASK;
+    /*The number of heads are stored in the second byte*/
+    maxhead = (maxhead >> ONE_BYTE_OFFSET) & ONE_BYTE_MASK;
 
-    return geometry;
+    return maxhead;
 }
 
 

@@ -136,10 +136,12 @@ int main(int argc, char *argv[]){
 
                 term_puts("Insert sector: ");
                 int length_sector = term_readline(buf, LINE_LENGTH);
+                /*Cast the first (length_sector) characters to integer*/
                 int sect = str_to_int(buf, length_sector, BASE);
 
                 term_puts("\nInsert head: ");
                 int length_head = term_readline(buf, LINE_LENGTH);
+                /*Cast the first (length_head) characters to integer*/
                 int head = str_to_int(buf, length_head, BASE);
 
                 if(sect != -1 && head != -1){
