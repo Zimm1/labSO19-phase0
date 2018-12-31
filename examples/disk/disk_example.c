@@ -8,10 +8,6 @@
 #define LINE_LENGTH                 24
 #define CMD_LENGTH                  1
 
-/*Number digits with string terminator (0)*/
-#define CYLINDER_LENGTH             6
-#define HEAD_SECT_LENGTH            4
-
 #define LINE_BUF_SIZE               256
 #define DISK_READ_LENGTH            4096
 
@@ -108,16 +104,15 @@ int main(int argc, char *argv[]){
 
                     int res = disk_read(text_read, sect, head);
                     if(res == ST_DEVICE_READY){
-                        char *tmp;
+                        char tmp[LINE_BUF_SIZE];
 
                         term_puts("\nText read in the block located at (");
-                        tmp = int_to_str(sect, length_sector);
+                        int_to_str(sect, tmp);
                         term_putchar(*tmp);
                         term_putchar(',');
-                        tmp = int_to_str(head, length_head);
+                        int_to_str(head, tmp);
                         term_putchar(*tmp);
                         term_puts(") in the current cylinder.\n\n");
-
 
                         term_puts(text_read);
                         term_putchar('\n');
@@ -152,12 +147,12 @@ int main(int argc, char *argv[]){
                     int res = disk_write(text_write, sect, head);
 
                     if(res == ST_DEVICE_READY){
-                        char *tmp;
+                        char tmp[LINE_BUF_SIZE];
                         term_puts("\nText written in the block located at (");
-                        tmp = int_to_str(sect, length_sector);
+                        int_to_str(sect, tmp);
                         term_putchar(*tmp);
                         term_putchar(',');
-                        tmp = int_to_str(head, length_head);
+                        int_to_str(head, tmp);
                         term_putchar(*tmp);
                         term_puts(") in the current cylinder.\n");
                     } else {
@@ -171,17 +166,20 @@ int main(int argc, char *argv[]){
             }
 
             case GEOMETRY: {
+                char str[LINE_BUF_SIZE];
+
                 term_puts("MAX CYLINDER: ");
-                int max_cyl = disk_get_maxcyl();
-                term_puts(int_to_str(max_cyl, CYLINDER_LENGTH));
+                int_to_str(disk_get_maxcyl(), str);
+                term_puts(str);
 
                 term_puts("\nMAX SECTOR: ");
-                int max_sect = disk_get_maxsect();
-                term_puts(int_to_str(max_sect, HEAD_SECT_LENGTH));
+                int_to_str(disk_get_maxsect(), str);
+                term_puts(str);
 
                 term_puts("\nMAX HEAD: ");
-                int max_head = disk_get_maxhead();
-                term_puts(int_to_str(max_head, HEAD_SECT_LENGTH));
+                int_to_str(disk_get_maxhead(), str);
+                term_puts(str);
+
                 term_putchar('\n');
 
                 break;

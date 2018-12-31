@@ -5,10 +5,9 @@ void str_swap(char *x, char *y){
     char t = *x; *x = *y; *y = t;
 }
 
-char* str_reverse(char *buffer, int i, int j){
+void str_reverse(char *str, int i, int j){
     while(i<j)
-        str_swap(&buffer[i++], &buffer[j--]);
-    return buffer;
+        str_swap(&str[i++], &str[j--]);
 }
 
 int str_to_int(char *str, unsigned int length, int base){
@@ -22,9 +21,12 @@ int str_to_int(char *str, unsigned int length, int base){
         }
 
         value = *str -'0';
+
+        /* If it's an uppercase letter */
         if (value > 16) {
             value -= 7;
         }
+        /* If it's a lowercase letter */
         if (value >= 42) {
             value -= 32;
         }
@@ -43,27 +45,26 @@ void str_mac_to_array(char *str, unsigned char mac[6]) {
     }
 }
 
-char* int_to_str(int num,int length){
+void int_to_str(int num, char *str){
     int i = 0;
-    char buffer[length];
     int n = num;
 
     while(n){
         int r = n % 10;
         if(r >= 10){
-            buffer[i++] = 65 + (r - 10);
+            str[i++] = 65 + (r - 10);
         } else {
-            buffer[i++] = 48 + r;
+            str[i++] = 48 + r;
         }
         n = n / 10;
     }
-    if(i == 0 ){
-        buffer[i++] = '0';
+    if(i == 0){
+        str[i++] = '0';
     }
 
-    buffer[i] = '\0';
+    str[i] = '\0';
 
-    return str_reverse(buffer, 0, i-1);
+    str_reverse(str, 0, i-1);
 }
 
 void int_to_hex_string(int n, char* hex) {

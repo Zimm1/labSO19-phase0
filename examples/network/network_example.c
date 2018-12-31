@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
 	net_conf_read(&net_conf);
 	print_net_conf(&net_conf);
 
+	/* The default mode is promisq ON, sets to OFF */
 	net_conf_set_promisq(0);
 
 	while(1) {
@@ -77,6 +78,7 @@ int main(int argc, char *argv[]) {
 			write(&packet, buf);
 		} else if (c == 'r') {
 			term_puts("Listening for messages...\n");
+			/* Keeps reading incoming messages */
 			while (1) {
 				read(&packet);
 			}

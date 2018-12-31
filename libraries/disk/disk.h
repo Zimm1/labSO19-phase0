@@ -39,7 +39,7 @@ int disk_read(void* address, unsigned int sectnum, unsigned int headnum);
 int disk_write(void* address, unsigned int sectnum, unsigned int headnum);
 
 /**
-  * Reset the device and move the boom to 0.
+  * Resets the device and moves the boom to 0.
   *
   *	returns ST_DEVICE_READY if the operation ends without error, otherwise the error code
   *
@@ -47,7 +47,7 @@ int disk_write(void* address, unsigned int sectnum, unsigned int headnum);
 int disk_reset();
 
 /**
-  * Move the boom to the desired position
+  * Moves the boom to the desired position
   *
   * cyl: the number of cylinder where to move the boom
   *
@@ -61,7 +61,7 @@ int disk_get_maxsect();
 int disk_get_maxcyl();
 
 /** 
-  * Check if the given coordinates (cylinder, sector, head) have a valid value
+  * Checks if the given coordinates (cylinder, sector, head) have a valid value
   *
   * returns true only if the coordinates are in a valid range
   *
