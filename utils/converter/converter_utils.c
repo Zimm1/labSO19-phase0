@@ -16,7 +16,7 @@ int str_to_int(char *str, unsigned int length, int base){
     int value;
     int c;
 
-    for(c = 0; c < length; c++){
+    for(c = 0; c < length; ++c){
         if (!IS_DIGIT(*str)) {
             return -1;
         }

@@ -1,6 +1,15 @@
 # labSO 2018-2019 - Phase 0
 Libraries and examples for network and disk uMPS interfaces.
 
+## Setup
+* Install uMPS using [umps-apt-installer](https://github.com/Zimm1/umps-apt-installer)
+* Do a Make in the root directory
+	```
+    make
+    ```
+* There will be two examples in `/examples` folder, which can be executed in uMPS by loading the virtual machine conifgurations in each folder. Please follow the corresponding section to setup the examples.
+* In order to test the network example, it is advisable to load `machine_net_1` and `machine_net_2` in two instances of uMPS, so the two network interfaces have different MAC addresses.
+
 ## Network
 uMPS network interface is made for VDE (Virtual Distributed Network), a virtual network framework.
 
